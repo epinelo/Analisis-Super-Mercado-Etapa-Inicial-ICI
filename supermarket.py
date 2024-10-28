@@ -1,6 +1,9 @@
 import pandas as pd
 import numpy as np
+from scipy import stats
 from scipy.stats import beta, norm
+
+#-----------------------Primera parte-----------------------
 
 # Cargar los datos de ventas del supermercado
 df = pd.read_csv("SuperMarketData.csv")
@@ -65,7 +68,9 @@ nom_total = (tot_cajeros + tot_conserjes + tot_almacenistas + tot_gpasillo + tot
 # Cálculo del gasto en luz con una superficie de 2000 m²
 consumo_kwh_m2 = 20  # Consumo promedio en kWh por m² (aproximado)
 precio_kwh = 2.3  # Precio por kWh (tarifa comercial)
-gasto_luz = consumo_kwh_m2 * 2000 * precio_kwh * 30  # Consumo mensual
+horas_al_día = 12 # Horas laborales del supermercado
+superficie = 2000 # Superficie del supermercado en m²
+gasto_luz = consumo_kwh_m2 * superficie * horas_al_día * precio_kwh * 30  # Consumo mensual
 
 # Otros gastos estimados
 mantenimiento = 100000  # Mantenimiento general
@@ -94,3 +99,26 @@ else:
 visitas_semanales = 2.5
 porc_pob = N / (160000 * visitas_semanales)
 print(f"Porcentaje de la población objetivo requerido: {porc_pob * 100:.2f}%")
+
+#-----------------------Segunda parte-----------------------
+
+# Extraer la columna "Rating" y calcular las estadísticas relevantes
+ratings = df["Rating"]
+
+# Calcular la media y la desviación estándar de los ratings
+mu = ratings.mean()
+sigma = ratings.std()
+n = 1000  # Tamaño de muestra estimado para la nueva sucursal
+rating_objetivo = 8.5  # Rating objetivo
+
+# Aplicar el Teorema del Límite Central para estimar la distribución muestral
+mu_muestra = mu
+sigma_muestra = sigma / np.sqrt(n)
+
+# Calcular la probabilidad de obtener un promedio de rating de 8.5 o más
+probabilidad = 1 - stats.norm.cdf(rating_objetivo, loc=mu_muestra, scale=sigma_muestra)
+
+# Imprimir resultados
+print(f"Media de ratings: {mu:.2f}")
+print(f"Desviación estándar de ratings: {sigma:.2f}")
+print(f"Probabilidad de obtener un rating promedio de 8.5 o más: {probabilidad:.4f}")
